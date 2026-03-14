@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fake News Detector</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      perspective: 1000px;
+      color: white;
+      overflow: hidden;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 700px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: rotateY(10deg) rotateX(5deg);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    textarea, input {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #ff416c;
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+      color: white;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 15px;
+      font-size: 1.1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      transform: translateZ(20px);
+    }
+
+    .real {
+      background: rgba(0, 255, 0, 0.15);
+      color: #00ff00;
+    }
+
+    .fake {
+      background: rgba(255, 0, 0, 0.15);
+      color: #ff0000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Fake News Detection</h1>
+    <textarea id="newsText" placeholder="Paste news text here..."></textarea>
+    <button onclick="checkText()">Check Text</button>
+    <input id="newsUrl" type="text" placeholder="Paste news article URL here...">
+    <button onclick="checkUrl()">Check URL</button>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    async function checkText() {
+      const text = document.getElementById("newsText").value;
+      const response = await fetch("/predict_text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+      const data = await response.json();
+      showResult(data);
+    }
+
+    async function checkUrl() {
+      const url = document.getElementById("newsUrl").value;
+      const response = await fetch("/predict_url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+      });
+      const data = await response.json();
+      showResult(data);
+    }
+
+    function showResult(data) {
+      const outputDiv = document.getElementById("output");
+      if (data.error) {
+        outputDiv.innerHTML = `<div class="result fake"><b>Error:</b> ${data.error}</div>`;
+        return;
+      }
+
+      const label = data.prediction;
+      const score = data.score;
+      const summary = data.summary;
+
+      let cssClass = label === "FAKE" ? "fake" : "real";
+      outputDiv.innerHTML = `
+        <div class="result ${cssClass}">
+          <b>Prediction:</b> ${label} (${score}%)<br><br>
+          <b>Summary:</b> ${summary}
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
