@@ -1,2 +1,21 @@
-# Fake-News-Dection
-**Fake News Detection** is a system that identifies and filters misleading or false news using machine learning and natural language processing. It analyzes news content, patterns, and sources to classify whether the information is real or fake, helping prevent the spread of misinformation online.
+# Fake News Detection
+
+**Fake News Detection** is a Flask web application that uses machine learning (Hugging Face Transformers) to classify whether a piece of news is real or fake and generate a short summary.
+
+## 🔍 What it does
+- Classifies text as **REAL** or **FAKE** (zero-shot classification)
+- Summarizes news content automatically
+- Lets you check either:
+  - raw news text input, or
+  - a news article URL (automatically extracts content)
+
+## 🚀 Run locally
+```bash
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+```
+
+## 📦 Deploy
+This project includes a `Procfile`, `requirements.txt`, and `runtime.txt` for deploying to platforms like Render, Heroku, Fly.io, and others.
