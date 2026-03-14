@@ -1,0 +1,6 @@
+flask
+transformers
+torch
+trafilatura
+requests
+gunicorn
